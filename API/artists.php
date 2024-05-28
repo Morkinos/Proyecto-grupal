@@ -111,5 +111,5 @@ function borrarArtist() {
         echo json_encode(array("mensaje" => "No se pudo borrar el artista"));
     }
 }
-
+echo ('mamapichass');
 ?>
