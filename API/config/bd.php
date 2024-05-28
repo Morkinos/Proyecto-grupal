@@ -19,4 +19,5 @@ class Database{
          return $this->conn;
     }
 }
+echo json_encode('MAMAPICHAS');
 ?>
