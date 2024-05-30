@@ -37,11 +37,9 @@ switch ($request_method) {
 
 function obtenerCompras() {
     global $db;
-<<<<<<< HEAD
-    $query = "SELECT idPurchase, idUser, idSong, fecha_compra, datePurchase FROM Avenger_purchase";
-=======
+
     $query = "SELECT idPurchase, idUser, idSong, datePurchase, price FROM Avenger_purchases";
->>>>>>> main
+
     $stmt = $db->prepare($query);
     $stmt->execute();
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -50,11 +48,9 @@ function obtenerCompras() {
 
 function obtenerCompra($idPurchase) {
     global $db;
-<<<<<<< HEAD
-    $query = "SELECT idPurchase, idUser, idSong, fecha_compra, datePurchase FROM Avenger_purchase WHERE idPurchase = ?";
-=======
+
     $query = "SELECT idPurchase, idUser, idSong, datePurchase, price FROM Avenger_purchases WHERE idPurchase = ?";
->>>>>>> main
+
     $stmt = $db->prepare($query);
     $stmt->bindParam(1, $idPurchase);
     $stmt->execute();
@@ -66,21 +62,14 @@ function crearCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-<<<<<<< HEAD
-    $query = "INSERT INTO Avenger_purchase (idUser, idSong, price, datePurchase) VALUES (:idUser, :cancion_id, :price, :datePurchase)";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":idUser", $data->idUser);
-    $stmt->bindParam(":idSong", $data->idSong);
-    $stmt->bindParam(":price", $data->price);
-    $stmt->bindParam(":datePurchase", $data->datePurchase);
-=======
+
     $query = "INSERT INTO Avenger_purchases (idUser, idSong, datePurchase, price) VALUES (:idUser, :idSong, :datePurchase, :price)";
     $stmt = $db->prepare($query);
     $stmt->bindParam(":idUser", $data->idUser);
     $stmt->bindParam(":idSong", $data->idSong);
     $stmt->bindParam(":datePurchase", $data->datePurchase);
     $stmt->bindParam(":price", $data->price);
->>>>>>> main
+
 
     if($stmt->execute()) {
         http_response_code(201);
@@ -95,21 +84,14 @@ function actualizarCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-<<<<<<< HEAD
-    $query = "UPDATE Avenger_purchase SET idUser = :idUser, idSong = :idSong, price = :price, datePurchase = :datePurchase WHERE idPurchase = :idPurchase";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":idUser", $data->idUser);
-    $stmt->bindParam(":idSong", $data->idSong);
-    $stmt->bindParam(":price", $data->price);
-    $stmt->bindParam(":datePurchase", $data->datePurchase);
-=======
+
     $query = "UPDATE Avenger_purchases SET idUser = :idUser, idSong = :idSong, datePurchase = :datePurchase, price = :price WHERE idPurchase = :idPurchase";
     $stmt = $db->prepare($query);
     $stmt->bindParam(":idUser", $data->idUser);
     $stmt->bindParam(":idSong", $data->idSong);
     $stmt->bindParam(":datePurchase", $data->datePurchase);
     $stmt->bindParam(":price", $data->price);
->>>>>>> main
+
     $stmt->bindParam(":idPurchase", $data->idPurchase);
 
     if($stmt->execute()) {
@@ -125,11 +107,8 @@ function borrarCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-<<<<<<< HEAD
-    $query = "DELETE FROM Avenger_purchase WHERE idPurchase = :idPurchase";
-=======
     $query = "DELETE FROM Avenger_purchases WHERE idPurchase = :idPurchase";
->>>>>>> main
+
     $stmt = $db->prepare($query);
     $stmt->bindParam(":idPurchase", $data->idPurchase);
 

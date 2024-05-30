@@ -6,11 +6,9 @@ header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-<<<<<<< HEAD
+
 include_once "../API/config/bd.php";
-=======
-include_once "../API/config/db.php";
->>>>>>> main
+
 
 $database = new Database();
 $db = $database->getConn();
@@ -50,11 +48,8 @@ function obtenerAlbums() {
 
 function obtenerAlbum($idAlbums) {
     global $db;
-<<<<<<< HEAD
+
     $query = "SELECT idAlbums, idArtist, title, releaseDate, gender FROM Avenger_album WHERE idAlbums = ?";
-=======
-    $query = "SELECT idAlbums, idArtist, title, releaseDate	, gender FROM Avenger_album WHERE idAlbums = ?";
->>>>>>> main
     $stmt = $db->prepare($query);
     $stmt->bindParam(1, $idAlbums);
     $stmt->execute();
