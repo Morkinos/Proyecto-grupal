@@ -6,7 +6,7 @@ header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-include_once "../config/db.php";
+include_once "../API/config/db.php";
 
 $database = new Database();
 $db = $database->getConn();
@@ -21,7 +21,7 @@ switch ($request_method) {
         actualizarArtist(); 
         break;
     case 'GET':
-        isset($_GET["id"]) ? obtenerArtist(intval($_GET["id"])) : obtenerArtists();
+        isset($_GET["idArtist"]) ? obtenerArtist(intval($_GET["idArtist"])) : obtenerArtists();
         break;
     case 'DELETE':
         borrarArtist();
@@ -37,18 +37,18 @@ switch ($request_method) {
 
 function obtenerArtists() {
     global $db;
-    $query = "SELECT id, idArtist, name, biography, creationDate FROM Avenger_artist";
+    $query = "SELECT idArtist, name, biography, creationDate FROM Avenger_artist";
     $stmt = $db->prepare($query);
     $stmt->execute();
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode($items);
 }
 
-function obtenerArtist($id) {
+function obtenerArtist($idArtist) {
     global $db;
-    $query = "SELECT id, idArtist, name, biography, creationDate FROM Avenger_artist WHERE id = ?";
+    $query = "SELECT  idArtist, name, biography, creationDate FROM Avenger_artist WHERE idArtist = ?";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(1, $id);
+    $stmt->bindParam(1, $idArtist);
     $stmt->execute();
     $item = $stmt->fetch(PDO::FETCH_ASSOC);
     echo json_encode($item);
@@ -58,9 +58,8 @@ function crearArtist() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "INSERT INTO Avenger_artist (idArtist, name, biography, creationDate) VALUES (:idArtist, :name, :biography, :creationDate)";
+    $query = "INSERT INTO Avenger_artist (name, biography, creationDate) VALUES ( :name, :biography, :creationDate)";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(":idArtist", $data->Avenger_artist);
     $stmt->bindParam(":name", $data->name);
     $stmt->bindParam(":biography", $data->biography);
     $stmt->bindParam(":creationDate", $data->creationDate);
@@ -78,13 +77,12 @@ function actualizarArtist() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "UPDATE Avenger_artist SET idArtist = :idArtist, name = :name, biography = :biography, creationDate = :creationDate WHERE id = :id";
+    $query = "UPDATE Avenger_artist SET name = :name, biography = :biography, creationDate = :creationDate WHERE idArtist = :idArtist";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(":idArtist", $data->idArtist);
     $stmt->bindParam(":name", $data->name);
     $stmt->bindParam(":biography", $data->biography);
     $stmt->bindParam(":creationDate", $data->creationDate);
-    $stmt->bindParam(":id", $data->id);
+    $stmt->bindParam(":idArtist", $data->idArtist);
 
     if($stmt->execute()) {
         http_response_code(200);
@@ -99,9 +97,9 @@ function borrarArtist() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "DELETE FROM Avenger_artist WHERE id = :id";
+    $query = "DELETE FROM Avenger_artist WHERE idArtist = :idArtist";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(":id", $data->id);
+    $stmt->bindParam(":idArtist", $data->idArtist);
 
     if($stmt->execute()) {
         http_response_code(200);
