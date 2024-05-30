@@ -6,7 +6,7 @@ header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-include_once "../config/db.php";
+include_once "../API/config/bd.php";
 
 $database = new Database();
 $db = $database->getConn();
@@ -21,7 +21,7 @@ switch ($request_method) {
         actualizarAlbum(); 
         break;
     case 'GET':
-        isset($_GET["id"]) ? obtenerAlbum(intval($_GET["id"])) : obtenerAlbums();
+        isset($_GET["idAlbums"]) ? obtenerAlbum(intval($_GET["idAlbums"])) : obtenerAlbums();
         break;
     case 'DELETE':
         borrarAlbum();
@@ -37,18 +37,18 @@ switch ($request_method) {
 
 function obtenerAlbums() {
     global $db;
-    $query = "SELECT id, artista_id, titulo, fecha_lanzamiento, genero FROM albums";
+    $query = "SELECT idAlbums, idArtist, title, releaseDate, gender FROM Avenger_album";
     $stmt = $db->prepare($query);
     $stmt->execute();
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode($items);
 }
 
-function obtenerAlbum($id) {
+function obtenerAlbum($idAlbums) {
     global $db;
-    $query = "SELECT id, artista_id, titulo, fecha_lanzamiento, genero FROM albums WHERE id = ?";
+    $query = "SELECT idAlbums, idArtist, title, releaseDate, gender FROM Avenger_album WHERE idAlbums = ?";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(1, $id);
+    $stmt->bindParam(1, $idAlbums);
     $stmt->execute();
     $item = $stmt->fetch(PDO::FETCH_ASSOC);
     echo json_encode($item);
@@ -58,12 +58,12 @@ function crearAlbum() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "INSERT INTO albums (artista_id, titulo, fecha_lanzamiento, genero) VALUES (:artista_id, :titulo, :fecha_lanzamiento, :genero)";
+    $query = "INSERT INTO Avenger_album (idArtist, title, releaseDate, gender) VALUES (:idArtist, :title, :releaseDate, :gender)";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(":artista_id", $data->artista_id);
-    $stmt->bindParam(":titulo", $data->titulo);
-    $stmt->bindParam(":fecha_lanzamiento", $data->fecha_lanzamiento);
-    $stmt->bindParam(":genero", $data->genero);
+    $stmt->bindParam(":idArtist", $data->idArtist);
+    $stmt->bindParam(":title", $data->title);
+    $stmt->bindParam(":releaseDate", $data->releaseDate);
+    $stmt->bindParam(":gender", $data->gender);
 
     if($stmt->execute()) {
         http_response_code(201);
@@ -78,13 +78,13 @@ function actualizarAlbum() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "UPDATE albums SET artista_id = :artista_id, titulo = :titulo, fecha_lanzamiento = :fecha_lanzamiento, genero = :genero WHERE id = :id";
+    $query = "UPDATE Avenger_album SET idArtist = :idArtist, title = :title, releaseDate = :releaseDate, gender = :gender WHERE idAlbums = :idAlbums";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(":artista_id", $data->artista_id);
-    $stmt->bindParam(":titulo", $data->titulo);
-    $stmt->bindParam(":fecha_lanzamiento", $data->fecha_lanzamiento);
-    $stmt->bindParam(":genero", $data->genero);
-    $stmt->bindParam(":id", $data->id);
+    $stmt->bindParam(":idArtist", $data->idArtist);
+    $stmt->bindParam(":title", $data->title);
+    $stmt->bindParam(":releaseDate", $data->releaseDate);
+    $stmt->bindParam(":gender", $data->gender);
+    $stmt->bindParam(":idAlbums", $data->idAlbums);
 
     if($stmt->execute()) {
         http_response_code(200);
@@ -99,9 +99,9 @@ function borrarAlbum() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "DELETE FROM albums WHERE id = :id";
+    $query = "DELETE FROM Avenger_album WHERE idAlbums = :idAlbums";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(":id", $data->id);
+    $stmt->bindParam(":idAlbums", $data->idAlbums);
 
     if($stmt->execute()) {
         http_response_code(200);

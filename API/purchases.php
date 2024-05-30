@@ -6,7 +6,7 @@ header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-include_once "../config/db.php";
+include_once "../API/config/bd.php";
 
 $database = new Database();
 $db = $database->getConn();
@@ -21,7 +21,7 @@ switch ($request_method) {
         actualizarCompra(); 
         break;
     case 'GET':
-        isset($_GET["id"]) ? obtenerCompra(intval($_GET["id"])) : obtenerCompras();
+        isset($_GET["idPurchase"]) ? obtenerCompra(intval($_GET["idPurchase"])) : obtenerCompras();
         break;
     case 'DELETE':
         borrarCompra();
@@ -37,18 +37,18 @@ switch ($request_method) {
 
 function obtenerCompras() {
     global $db;
-    $query = "SELECT id, usuario_id, cancion_id, fecha_compra, precio FROM purchases";
+    $query = "SELECT idPurchase, idUser, idSong, fecha_compra, datePurchase FROM Avenger_purchase";
     $stmt = $db->prepare($query);
     $stmt->execute();
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode($items);
 }
 
-function obtenerCompra($id) {
+function obtenerCompra($idPurchase) {
     global $db;
-    $query = "SELECT id, usuario_id, cancion_id, fecha_compra, precio FROM purchases WHERE id = ?";
+    $query = "SELECT idPurchase, idUser, idSong, fecha_compra, datePurchase FROM Avenger_purchase WHERE idPurchase = ?";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(1, $id);
+    $stmt->bindParam(1, $idPurchase);
     $stmt->execute();
     $item = $stmt->fetch(PDO::FETCH_ASSOC);
     echo json_encode($item);
@@ -58,12 +58,12 @@ function crearCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "INSERT INTO purchases (usuario_id, cancion_id, fecha_compra, precio) VALUES (:usuario_id, :cancion_id, :fecha_compra, :precio)";
+    $query = "INSERT INTO Avenger_purchase (idUser, idSong, price, datePurchase) VALUES (:idUser, :cancion_id, :price, :datePurchase)";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(":usuario_id", $data->usuario_id);
-    $stmt->bindParam(":cancion_id", $data->cancion_id);
-    $stmt->bindParam(":fecha_compra", $data->fecha_compra);
-    $stmt->bindParam(":precio", $data->precio);
+    $stmt->bindParam(":idUser", $data->idUser);
+    $stmt->bindParam(":idSong", $data->idSong);
+    $stmt->bindParam(":price", $data->price);
+    $stmt->bindParam(":datePurchase", $data->datePurchase);
 
     if($stmt->execute()) {
         http_response_code(201);
@@ -78,13 +78,13 @@ function actualizarCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "UPDATE purchases SET usuario_id = :usuario_id, cancion_id = :cancion_id, fecha_compra = :fecha_compra, precio = :precio WHERE id = :id";
+    $query = "UPDATE Avenger_purchase SET idUser = :idUser, idSong = :idSong, price = :price, datePurchase = :datePurchase WHERE idPurchase = :idPurchase";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(":usuario_id", $data->usuario_id);
-    $stmt->bindParam(":cancion_id", $data->cancion_id);
-    $stmt->bindParam(":fecha_compra", $data->fecha_compra);
-    $stmt->bindParam(":precio", $data->precio);
-    $stmt->bindParam(":id", $data->id);
+    $stmt->bindParam(":idUser", $data->idUser);
+    $stmt->bindParam(":idSong", $data->idSong);
+    $stmt->bindParam(":price", $data->price);
+    $stmt->bindParam(":datePurchase", $data->datePurchase);
+    $stmt->bindParam(":idPurchase", $data->idPurchase);
 
     if($stmt->execute()) {
         http_response_code(200);
@@ -99,9 +99,9 @@ function borrarCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "DELETE FROM purchases WHERE id = :id";
+    $query = "DELETE FROM Avenger_purchase WHERE idPurchase = :idPurchase";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(":id", $data->id);
+    $stmt->bindParam(":idPurchase", $data->idPurchase);
 
     if($stmt->execute()) {
         http_response_code(200);

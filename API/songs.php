@@ -6,7 +6,7 @@ header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-include_once "../config/db.php";
+include_once "../API/config/bd.php";
 
 $database = new Database();
 $db = $database->getConn();
@@ -21,7 +21,7 @@ switch ($request_method) {
         actualizarCancion(); 
         break;
     case 'GET':
-        isset($_GET["id"]) ? obtenerCancion(intval($_GET["id"])) : obtenerCanciones();
+        isset($_GET["idSong"]) ? obtenerCancion(intval($_GET["idSong"])) : obtenerCanciones();
         break;
     case 'DELETE':
         borrarCancion();
@@ -37,18 +37,18 @@ switch ($request_method) {
 
 function obtenerCanciones() {
     global $db;
-    $query = "SELECT id, album_id, titulo, duracion, demo_path, full_path, precio FROM songs";
+    $query = "SELECT idSong, idAlbum, title, duration, demo_path, full_path, price FROM Avenger_song";
     $stmt = $db->prepare($query);
     $stmt->execute();
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode($items);
 }
 
-function obtenerCancion($id) {
+function obtenerCancion($idSong) {
     global $db;
-    $query = "SELECT id, album_id, titulo, duracion, demo_path, full_path, precio FROM songs WHERE id = ?";
+    $query = "SELECT idSong, idAlbum, title, duration, demo_path, full_path, price FROM Avenger_song WHERE idSong = ?";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(1, $id);
+    $stmt->bindParam(1, $idSong);
     $stmt->execute();
     $item = $stmt->fetch(PDO::FETCH_ASSOC);
     echo json_encode($item);
@@ -58,14 +58,14 @@ function crearCancion() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "INSERT INTO songs (album_id, titulo, duracion, demo_path, full_path, precio) VALUES (:album_id, :titulo, :duracion, :demo_path, :full_path, :precio)";
+    $query = "INSERT INTO Avenger_song (idAlbum, title, duration, demo_path, full_path, price) VALUES (:idAlbum, :title, :duration, :demo_path, :full_path, :precio)";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(":album_id", $data->album_id);
-    $stmt->bindParam(":titulo", $data->titulo);
-    $stmt->bindParam(":duracion", $data->duracion);
+    $stmt->bindParam(":idAlbum", $data->album_id);
+    $stmt->bindParam(":title", $data->title);
+    $stmt->bindParam(":duration", $data->duration);
     $stmt->bindParam(":demo_path", $data->demo_path);
     $stmt->bindParam(":full_path", $data->full_path);
-    $stmt->bindParam(":precio", $data->precio);
+    $stmt->bindParam(":price", $data->price);
 
     if($stmt->execute()) {
         http_response_code(201);
@@ -80,15 +80,15 @@ function actualizarCancion() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "UPDATE songs SET album_id = :album_id, titulo = :titulo, duracion = :duracion, demo_path = :demo_path, full_path = :full_path, precio = :precio WHERE id = :id";
+    $query = "UPDATE Avenger_song SET idAlbum = :idAlbum, title = :title, duration = :duration, demo_path = :demo_path, full_path = :full_path, price = :price WHERE idSong = :idSong";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(":album_id", $data->album_id);
-    $stmt->bindParam(":titulo", $data->titulo);
-    $stmt->bindParam(":duracion", $data->duracion);
+    $stmt->bindParam(":idAlbum", $data->idAlbum);
+    $stmt->bindParam(":title", $data->title);
+    $stmt->bindParam(":duration", $data->duration);
     $stmt->bindParam(":demo_path", $data->demo_path);
     $stmt->bindParam(":full_path", $data->full_path);
-    $stmt->bindParam(":precio", $data->precio);
-    $stmt->bindParam(":id", $data->id);
+    $stmt->bindParam(":price", $data->price);
+    $stmt->bindParam(":idSong", $data->idSong);
 
     if($stmt->execute()) {
         http_response_code(200);
@@ -103,9 +103,9 @@ function borrarCancion() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "DELETE FROM songs WHERE id = :id";
+    $query = "DELETE FROM Avenger_song WHERE idSong = :idSong";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(":id", $data->id);
+    $stmt->bindParam(":idSong", $data->idSong);
 
     if($stmt->execute()) {
         http_response_code(200);
