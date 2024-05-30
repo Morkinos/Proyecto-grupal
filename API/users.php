@@ -21,7 +21,7 @@ switch ($request_method) {
         actualizarUsuario(); 
         break;
     case 'GET':
-        isset($_GET["idUsers"]) ? obtenerUsuario(intval($_GET["idUsers"])) : obtenerUsuarios();
+        isset($_GET["idUser"]) ? obtenerUsuario(intval($_GET["idUser"])) : obtenerUsuarios();
         break;
     case 'DELETE':
         borrarUsuario();
@@ -37,18 +37,18 @@ switch ($request_method) {
 
 function obtenerUsuarios() {
     global $db;
-    $query = "SELECT idUsers, name, email, password, releaseDate FROM Avenger_users";
+    $query = "SELECT idUser, name, email, password, releaseDate FROM Avenger_user";
     $stmt = $db->prepare($query);
     $stmt->execute();
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode($items);
 }
 
-function obtenerUsuario($idUsers) {
+function obtenerUsuario($idUser) {
     global $db;
-    $query = "SELECT idUsers, nombre, email, password, releaseDate FROM Avenger_users WHERE idUsers = ?";
+    $query = "SELECT idUser, name, email, password, releaseDate FROM Avenger_user WHERE idUser = ?";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(1, $idUsers);
+    $stmt->bindParam(1, $idUser);
     $stmt->execute();
     $item = $stmt->fetch(PDO::FETCH_ASSOC);
     echo json_encode($item);
@@ -58,9 +58,9 @@ function crearUsuario() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "INSERT INTO Avenger_users (nombre, email, password, releaseDate) VALUES (:nombre, :email, :password, :releaseDate)";
+    $query = "INSERT INTO Avenger_user (name, email, password, releaseDate) VALUES (:name, :email, :password, :releaseDate)";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(":nombre", $data->nombre);
+    $stmt->bindParam(":name", $data->name);
     $stmt->bindParam(":email", $data->email);
     $stmt->bindParam(":password", $data->password);
     $stmt->bindParam(":releaseDate", $data->releaseDate);
@@ -78,13 +78,13 @@ function actualizarUsuario() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "UPDATE Avenger_users SET nombre = :nombre, email = :email, password = :password, releaseDate = :releaseDate WHERE idUsers = :idUsers";
+    $query = "UPDATE Avenger_user SET name = :name, email = :email, password = :password, releaseDate = :releaseDate WHERE idUser = :idUser";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(":nombre", $data->nombre);
+    $stmt->bindParam(":name", $data->name);
     $stmt->bindParam(":email", $data->email);
     $stmt->bindParam(":password", $data->password);
-    $stmt->bindParam(":fecha_registro", $data->releaseDate);
-    $stmt->bindParam(":idUsers", $data->idUsers);
+    $stmt->bindParam(":releaseDate", $data->releaseDate);
+    $stmt->bindParam(":idUser", $data->idUser);
 
     if($stmt->execute()) {
         http_response_code(200);
@@ -99,9 +99,9 @@ function borrarUsuario() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "DELETE FROM Avenger_users WHERE idUsers = :idUsers";
+    $query = "DELETE FROM Avenger_user WHERE idUser = :idUser";
     $stmt = $db->prepare($query);
-    $stmt->bindParam(":idUsers", $data->idUsers);
+    $stmt->bindParam(":idUser", $data->idUser);
 
     if($stmt->execute()) {
         http_response_code(200);
