@@ -115,5 +115,5 @@ function borrarCancion() {
         echo json_encode(array("mensaje" => "No se pudo borrar la canción"));
     }
 }
-
+echo "Prueba"
 ?>
