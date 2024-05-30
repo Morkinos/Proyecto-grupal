@@ -37,7 +37,7 @@ switch ($request_method) {
 
 function obtenerCanciones() {
     global $db;
-    $query = "SELECT idSong, idAlbum, title	, duration	, demo_path, full_path, price FROM Avenger_songs";
+    $query = "SELECT idSong, idAlbum, title	, duration, demo_path, full_path, price FROM Avenger_songs";
     $stmt = $db->prepare($query);
     $stmt->execute();
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);

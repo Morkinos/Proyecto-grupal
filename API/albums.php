@@ -37,7 +37,7 @@ switch ($request_method) {
 
 function obtenerAlbums() {
     global $db;
-    $query = "SELECT idAlbums, idArtist, title, releaseDate	, gender FROM Avenger_album";
+    $query = "SELECT idAlbums, idArtist, title, releaseDate, gender FROM Avenger_album";
     $stmt = $db->prepare($query);
     $stmt->execute();
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -86,12 +86,17 @@ function actualizarAlbum() {
     $stmt->bindParam(":gender", $data->gender);
     $stmt->bindParam(":idAlbums", $data->idAlbums);
 
-    if($stmt->execute()) {
-        http_response_code(200);
-        echo json_encode(array("mensaje" => "Álbum actualizado con éxito"));
+    if ($stmt->execute()) {
+        if ($stmt->rowCount() > 0) {
+            http_response_code(200);
+            echo json_encode(array("mensaje" => "Álbum actualizado con éxito"));
+        } else {
+            http_response_code(500);
+            echo json_encode(array("mensaje" => "No se pudo actualizar el Álbum: ID no encontrado"));
+        }
     } else {
         http_response_code(500);
-        echo json_encode(array("mensaje" => "No se pudo actualizar el álbum"));
+        echo json_encode(array("mensaje" => "Error al ejecutar la consulta de actualización"));
     }
 }
 
@@ -103,12 +108,17 @@ function borrarAlbum() {
     $stmt = $db->prepare($query);
     $stmt->bindParam(":idAlbums", $data->idAlbums);
 
-    if($stmt->execute()) {
-        http_response_code(200);
-        echo json_encode(array("mensaje" => "Álbum borrado con éxito"));
+    if ($stmt->execute()) {
+        if ($stmt->rowCount() > 0) {
+            http_response_code(200);
+            echo json_encode(array("mensaje" => "Álbum borrado con éxito"));
+        } else {
+            http_response_code(500);
+            echo json_encode(array("mensaje" => "No se pudo borrado el Álbum: ID no encontrado"));
+        }
     } else {
         http_response_code(500);
-        echo json_encode(array("mensaje" => "No se pudo borrar el álbum"));
+        echo json_encode(array("mensaje" => "Error al ejecutar la consulta de actualización"));
     }
 }
 

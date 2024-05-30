@@ -6,7 +6,7 @@ header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-include_once "../API/config/db.php";
+include_once "../API/config/db.php"; // Asegúrate de que esta ruta es correcta
 
 $database = new Database();
 $db = $database->getConn();
@@ -46,7 +46,7 @@ function obtenerArtists() {
 
 function obtenerArtist($idArtist) {
     global $db;
-    $query = "SELECT  idArtist, name, biography, creationDate FROM Avenger_artist WHERE idArtist = ?";
+    $query = "SELECT idArtist, name, biography, creationDate FROM Avenger_artist WHERE idArtist = ?";
     $stmt = $db->prepare($query);
     $stmt->bindParam(1, $idArtist);
     $stmt->execute();
@@ -58,13 +58,13 @@ function crearArtist() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "INSERT INTO Avenger_artist (name, biography, creationDate) VALUES ( :name, :biography, :creationDate)";
+    $query = "INSERT INTO Avenger_artist (name, biography, creationDate) VALUES (:name, :biography, :creationDate)";
     $stmt = $db->prepare($query);
     $stmt->bindParam(":name", $data->name);
     $stmt->bindParam(":biography", $data->biography);
     $stmt->bindParam(":creationDate", $data->creationDate);
 
-    if($stmt->execute()) {
+    if ($stmt->execute()) {
         http_response_code(201);
         echo json_encode(array("mensaje" => "Artista creado con éxito"));
     } else {
@@ -84,12 +84,17 @@ function actualizarArtist() {
     $stmt->bindParam(":creationDate", $data->creationDate);
     $stmt->bindParam(":idArtist", $data->idArtist);
 
-    if($stmt->execute()) {
-        http_response_code(200);
-        echo json_encode(array("mensaje" => "Artista actualizado con éxito"));
+    if ($stmt->execute()) {
+        if ($stmt->rowCount() > 0) {
+            http_response_code(200);
+            echo json_encode(array("mensaje" => "Artista actualizado con éxito"));
+        } else {
+            http_response_code(500);
+            echo json_encode(array("mensaje" => "No se pudo actualizar el artista: ID no encontrado"));
+        }
     } else {
         http_response_code(500);
-        echo json_encode(array("mensaje" => "No se pudo actualizar el artista"));
+        echo json_encode(array("mensaje" => "Error al ejecutar la consulta de actualización"));
     }
 }
 
@@ -101,13 +106,17 @@ function borrarArtist() {
     $stmt = $db->prepare($query);
     $stmt->bindParam(":idArtist", $data->idArtist);
 
-    if($stmt->execute()) {
-        http_response_code(200);
-        echo json_encode(array("mensaje" => "Artista borrado con éxito"));
+    if ($stmt->execute()) {
+        if ($stmt->rowCount() > 0) {
+            http_response_code(200);
+            echo json_encode(array("mensaje" => "Artista borrado con éxito"));
+        } else {
+            http_response_code(500);
+            echo json_encode(array("mensaje" => "No se pudo borrar el artista: ID no encontrado"));
+        }
     } else {
         http_response_code(500);
-        echo json_encode(array("mensaje" => "No se pudo borrar el artista"));
+        echo json_encode(array("mensaje" => "Error al ejecutar la consulta de eliminación"));
     }
 }
-echo ('mamapichass');
 ?>
