@@ -37,7 +37,7 @@ switch ($request_method) {
 
 function obtenerAlbums() {
     global $db;
-    $query = "SELECT idAlbums, idArtist	, title	, releaseDate, gender FROM album";
+    $query = "SELECT idAlbums, idArtist	, title	, releaseDate, gender FROM Avenger_album";
     $stmt = $db->prepare($query);
     $stmt->execute();
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
