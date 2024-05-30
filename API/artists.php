@@ -7,7 +7,7 @@ header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 
-include_once "../API/config/db.php"; // Asegúrate de que esta ruta es correcta
+include_once "../API/config/db.php"; 
 
 
 $database = new Database();
