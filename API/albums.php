@@ -6,7 +6,11 @@ header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
+<<<<<<< HEAD
 include_once "../API/config/bd.php";
+=======
+include_once "../API/config/db.php";
+>>>>>>> main
 
 $database = new Database();
 $db = $database->getConn();
@@ -46,7 +50,11 @@ function obtenerAlbums() {
 
 function obtenerAlbum($idAlbums) {
     global $db;
+<<<<<<< HEAD
     $query = "SELECT idAlbums, idArtist, title, releaseDate, gender FROM Avenger_album WHERE idAlbums = ?";
+=======
+    $query = "SELECT idAlbums, idArtist, title, releaseDate	, gender FROM Avenger_album WHERE idAlbums = ?";
+>>>>>>> main
     $stmt = $db->prepare($query);
     $stmt->bindParam(1, $idAlbums);
     $stmt->execute();
@@ -86,12 +94,17 @@ function actualizarAlbum() {
     $stmt->bindParam(":gender", $data->gender);
     $stmt->bindParam(":idAlbums", $data->idAlbums);
 
-    if($stmt->execute()) {
-        http_response_code(200);
-        echo json_encode(array("mensaje" => "Álbum actualizado con éxito"));
+    if ($stmt->execute()) {
+        if ($stmt->rowCount() > 0) {
+            http_response_code(200);
+            echo json_encode(array("mensaje" => "Álbum actualizado con éxito"));
+        } else {
+            http_response_code(500);
+            echo json_encode(array("mensaje" => "No se pudo actualizar el Álbum: ID no encontrado"));
+        }
     } else {
         http_response_code(500);
-        echo json_encode(array("mensaje" => "No se pudo actualizar el álbum"));
+        echo json_encode(array("mensaje" => "Error al ejecutar la consulta de actualización"));
     }
 }
 
@@ -103,12 +116,17 @@ function borrarAlbum() {
     $stmt = $db->prepare($query);
     $stmt->bindParam(":idAlbums", $data->idAlbums);
 
-    if($stmt->execute()) {
-        http_response_code(200);
-        echo json_encode(array("mensaje" => "Álbum borrado con éxito"));
+    if ($stmt->execute()) {
+        if ($stmt->rowCount() > 0) {
+            http_response_code(200);
+            echo json_encode(array("mensaje" => "Álbum borrado con éxito"));
+        } else {
+            http_response_code(500);
+            echo json_encode(array("mensaje" => "No se pudo borrado el Álbum: ID no encontrado"));
+        }
     } else {
         http_response_code(500);
-        echo json_encode(array("mensaje" => "No se pudo borrar el álbum"));
+        echo json_encode(array("mensaje" => "Error al ejecutar la consulta de actualización"));
     }
 }
 
