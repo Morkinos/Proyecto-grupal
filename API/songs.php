@@ -87,15 +87,20 @@ function actualizarCancion() {
     $stmt->bindParam(":duration", $data->duration);
     $stmt->bindParam(":demo_path", $data->demo_path);
     $stmt->bindParam(":full_path", $data->full_path);
-    $stmt->bindParam(":price", $price->price);
+    $stmt->bindParam(":price", $data->price);
     $stmt->bindParam(":idSong", $data->idSong);
 
-    if($stmt->execute()) {
-        http_response_code(200);
-        echo json_encode(array("mensaje" => "Canción actualizada con éxito"));
+    if ($stmt->execute()) {
+        if ($stmt->rowCount() > 0) {
+            http_response_code(200);
+            echo json_encode(array("mensaje" => "Cancion actualizado con éxito"));
+        } else {
+            http_response_code(500);
+            echo json_encode(array("mensaje" => "No se pudo actualizar la cancion: ID no encontrado"));
+        }
     } else {
         http_response_code(500);
-        echo json_encode(array("mensaje" => "No se pudo actualizar la canción"));
+        echo json_encode(array("mensaje" => "Error al ejecutar la consulta de actualización"));
     }
 }
 
@@ -107,12 +112,17 @@ function borrarCancion() {
     $stmt = $db->prepare($query);
     $stmt->bindParam(":idSong", $data->idSong);
 
-    if($stmt->execute()) {
-        http_response_code(200);
-        echo json_encode(array("mensaje" => "Canción borrada con éxito"));
+    if ($stmt->execute()) {
+        if ($stmt->rowCount() > 0) {
+            http_response_code(200);
+            echo json_encode(array("mensaje" => "Cancion borrada con éxito"));
+        } else {
+            http_response_code(500);
+            echo json_encode(array("mensaje" => "No se pudo borrar la cancion: ID no encontrado"));
+        }
     } else {
         http_response_code(500);
-        echo json_encode(array("mensaje" => "No se pudo borrar la canción"));
+        echo json_encode(array("mensaje" => "Error al ejecutar la consulta de eliminación"));
     }
 }
 ?>

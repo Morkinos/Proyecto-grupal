@@ -86,12 +86,17 @@ function actualizarUsuario() {
     $stmt->bindParam(":releaseDate", $data->releaseDate);
     $stmt->bindParam(":idUser", $data->idUser);
 
-    if($stmt->execute()) {
-        http_response_code(200);
-        echo json_encode(array("mensaje" => "Usuario actualizado con éxito"));
+    if ($stmt->execute()) {
+        if ($stmt->rowCount() > 0) {
+            http_response_code(200);
+            echo json_encode(array("mensaje" => "Usuario actualizado con éxito"));
+        } else {
+            http_response_code(500);
+            echo json_encode(array("mensaje" => "No se pudo actualizar el usuario: ID no encontrado"));
+        }
     } else {
         http_response_code(500);
-        echo json_encode(array("mensaje" => "No se pudo actualizar el usuario"));
+        echo json_encode(array("mensaje" => "Error al ejecutar la consulta de actualización"));
     }
 }
 
@@ -103,13 +108,17 @@ function borrarUsuario() {
     $stmt = $db->prepare($query);
     $stmt->bindParam(":idUser", $data->idUser);
 
-    if($stmt->execute()) {
-        http_response_code(200);
-        echo json_encode(array("mensaje" => "Usuario borrado con éxito"));
+    if ($stmt->execute()) {
+        if ($stmt->rowCount() > 0) {
+            http_response_code(200);
+            echo json_encode(array("mensaje" => "Usuario borrado con éxito"));
+        } else {
+            http_response_code(500);
+            echo json_encode(array("mensaje" => "No se pudo borrar el usuario: ID no encontrado"));
+        }
     } else {
         http_response_code(500);
-        echo json_encode(array("mensaje" => "No se pudo borrar el usuario"));
+        echo json_encode(array("mensaje" => "Error al ejecutar la consulta de eliminación"));
     }
 }
-
 ?>
