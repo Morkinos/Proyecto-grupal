@@ -1,5 +1,4 @@
 <?php   
-
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
@@ -58,9 +57,9 @@ function crearCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    if (is_null($data)) {
+    if (is_null($data) || empty(trim($data->idUser)) || empty(trim($data->idSong)) || empty(trim($data->datePurchase)) || !isset($data->price)) {
         http_response_code(400);
-        echo json_encode(array("mensaje" => "Datos inválidos o no proporcionados"));
+        echo json_encode(array("mensaje" => "Datos incompletos. Todos los campos son obligatorios y no deben estar vacíos."));
         return;
     }
 
@@ -84,14 +83,13 @@ function crearCompra() {
     }
 }
 
-
 function actualizarCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    if (is_null($data)) {
+    if (is_null($data) || empty(trim($data->idPurchase)) || empty(trim($data->idUser)) || empty(trim($data->idSong)) || empty(trim($data->datePurchase)) || !isset($data->price)) {
         http_response_code(400);
-        echo json_encode(array("mensaje" => "Datos inválidos o no proporcionados"));
+        echo json_encode(array("mensaje" => "Datos incompletos. Todos los campos son obligatorios y no deben estar vacíos."));
         return;
     }
 
@@ -121,9 +119,9 @@ function borrarCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    if (is_null($data)) {
+    if (is_null($data) || empty(trim($data->idPurchase))) {
         http_response_code(400);
-        echo json_encode(array("mensaje" => "Datos inválidos o no proporcionados"));
+        echo json_encode(array("mensaje" => "Datos incompletos. El campo idPurchase es obligatorio."));
         return;
     }
 
