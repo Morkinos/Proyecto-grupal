@@ -6,7 +6,7 @@ header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-include_once "../API/config/bd.php";
+include_once "../API/config/db.php";
 
 $database = new Database();
 $db = $database->getConn();
@@ -37,9 +37,7 @@ switch ($request_method) {
 
 function obtenerCompras() {
     global $db;
-
-    $query = "SELECT idPurchase, idUser, idSong, datePurchase, price FROM Avenger_purchases";
-
+    $query = "SELECT idPurchase, idUser, idSong, datePurchase, price FROM Avenger_purchase";
     $stmt = $db->prepare($query);
     $stmt->execute();
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -48,9 +46,7 @@ function obtenerCompras() {
 
 function obtenerCompra($idPurchase) {
     global $db;
-
-    $query = "SELECT idPurchase, idUser, idSong, datePurchase, price FROM Avenger_purchases WHERE idPurchase = ?";
-
+    $query = "SELECT idPurchase, idUser, idSong, datePurchase, price FROM Avenger_purchase WHERE idPurchase = ?";
     $stmt = $db->prepare($query);
     $stmt->bindParam(1, $idPurchase);
     $stmt->execute();
@@ -62,16 +58,24 @@ function crearCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
+    if (is_null($data)) {
+        http_response_code(400);
+        echo json_encode(array("mensaje" => "Datos inválidos o no proporcionados"));
+        return;
+    }
 
-    $query = "INSERT INTO Avenger_purchases (idUser, idSong, datePurchase, price) VALUES (:idUser, :idSong, :datePurchase, :price)";
+    // Calcular el precio con el impuesto
+    $price = $data->price;
+    $priceConImpuesto = $price + ($price * 0.13);
+
+    $query = "INSERT INTO Avenger_purchase (idUser, idSong, datePurchase, price) VALUES (:idUser, :idSong, :datePurchase, :price)";
     $stmt = $db->prepare($query);
     $stmt->bindParam(":idUser", $data->idUser);
     $stmt->bindParam(":idSong", $data->idSong);
     $stmt->bindParam(":datePurchase", $data->datePurchase);
-    $stmt->bindParam(":price", $data->price);
+    $stmt->bindParam(":price", $priceConImpuesto);
 
-
-    if($stmt->execute()) {
+    if ($stmt->execute()) {
         http_response_code(201);
         echo json_encode(array("mensaje" => "Compra creada con éxito"));
     } else {
@@ -80,26 +84,36 @@ function crearCompra() {
     }
 }
 
+
 function actualizarCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
+    if (is_null($data)) {
+        http_response_code(400);
+        echo json_encode(array("mensaje" => "Datos inválidos o no proporcionados"));
+        return;
+    }
 
-    $query = "UPDATE Avenger_purchases SET idUser = :idUser, idSong = :idSong, datePurchase = :datePurchase, price = :price WHERE idPurchase = :idPurchase";
+    $query = "UPDATE Avenger_purchase SET idUser = :idUser, idSong = :idSong, datePurchase = :datePurchase, price = :price WHERE idPurchase = :idPurchase";
     $stmt = $db->prepare($query);
     $stmt->bindParam(":idUser", $data->idUser);
     $stmt->bindParam(":idSong", $data->idSong);
     $stmt->bindParam(":datePurchase", $data->datePurchase);
     $stmt->bindParam(":price", $data->price);
-
     $stmt->bindParam(":idPurchase", $data->idPurchase);
 
-    if($stmt->execute()) {
-        http_response_code(200);
-        echo json_encode(array("mensaje" => "Compra actualizada con éxito"));
+    if ($stmt->execute()) {
+        if ($stmt->rowCount() > 0) {
+            http_response_code(200);
+            echo json_encode(array("mensaje" => "Compra actualizada con éxito"));
+        } else {
+            http_response_code(404);
+            echo json_encode(array("mensaje" => "No se pudo actualizar la compra: ID no encontrado"));
+        }
     } else {
         http_response_code(500);
-        echo json_encode(array("mensaje" => "No se pudo actualizar la compra"));
+        echo json_encode(array("mensaje" => "Error al ejecutar la consulta de actualización"));
     }
 }
 
@@ -107,18 +121,27 @@ function borrarCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "DELETE FROM Avenger_purchases WHERE idPurchase = :idPurchase";
+    if (is_null($data)) {
+        http_response_code(400);
+        echo json_encode(array("mensaje" => "Datos inválidos o no proporcionados"));
+        return;
+    }
 
+    $query = "DELETE FROM Avenger_purchase WHERE idPurchase = :idPurchase";
     $stmt = $db->prepare($query);
     $stmt->bindParam(":idPurchase", $data->idPurchase);
 
-    if($stmt->execute()) {
-        http_response_code(200);
-        echo json_encode(array("mensaje" => "Compra borrada con éxito"));
+    if ($stmt->execute()) {
+        if ($stmt->rowCount() > 0) {
+            http_response_code(200);
+            echo json_encode(array("mensaje" => "Compra borrada con éxito"));
+        } else {
+            http_response_code(404);
+            echo json_encode(array("mensaje" => "No se pudo borrar la compra: ID no encontrado"));
+        }
     } else {
         http_response_code(500);
-        echo json_encode(array("mensaje" => "No se pudo borrar la compra"));
+        echo json_encode(array("mensaje" => "Error al ejecutar la consulta de eliminación"));
     }
 }
-
 ?>

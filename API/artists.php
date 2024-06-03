@@ -6,9 +6,7 @@ header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-
-include_once "../API/config/db.php"; 
-
+include_once "../API/config/db.php"; // Asegúrate de que esta ruta es correcta
 
 $database = new Database();
 $db = $database->getConn();
@@ -68,7 +66,6 @@ function crearArtist() {
 
     if ($stmt->execute()) {
         http_response_code(201);
-
         echo json_encode(array("mensaje" => "Artista creado con éxito"));
     } else {
         http_response_code(500);
@@ -79,8 +76,8 @@ function crearArtist() {
 function actualizarArtist() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
-    $query = "UPDATE Avenger_artist SET name = :name, biography = :biography, creationDate = :creationDate WHERE idArtist = :idArtist";
 
+    $query = "UPDATE Avenger_artist SET name = :name, biography = :biography, creationDate = :creationDate WHERE idArtist = :idArtist";
     $stmt = $db->prepare($query);
     $stmt->bindParam(":name", $data->name);
     $stmt->bindParam(":biography", $data->biography);
@@ -122,5 +119,4 @@ function borrarArtist() {
         echo json_encode(array("mensaje" => "Error al ejecutar la consulta de eliminación"));
     }
 }
-
 ?>
