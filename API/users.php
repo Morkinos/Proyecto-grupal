@@ -1,6 +1,4 @@
-<?php   
-
-header("Access-Control-Allow-Origin: *");
+<?php   header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
 header("Access-Control-Max-Age: 3600");
@@ -31,7 +29,7 @@ switch ($request_method) {
         break;
     default:
         http_response_code(400);
-        echo json_encode(array("mensaje"=> "Método inválidUserso"));
+        echo json_encode(array("mensaje"=> "Método inválido"));
         break; 
 }
 
@@ -58,19 +56,25 @@ function crearUsuario() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "INSERT INTO Avenger_user (name, email, password, releaseDate) VALUES (:name, :email, :password, :releaseDate)";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":name", $data->name);
-    $stmt->bindParam(":email", $data->email);
-    $stmt->bindParam(":password", $data->password);
-    $stmt->bindParam(":releaseDate", $data->releaseDate);
+    if (!empty(trim($data->name)) && !empty(trim($data->email)) && !empty(trim($data->password))) {
+       
+        $query = "INSERT INTO Avenger_user (name, email, password, releaseDate) VALUES (:name, :email, :password, NOW())";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(":name", $data->name);
+        $stmt->bindParam(":email", $data->email);
+        $stmt->bindParam(":password", $data->password);
 
-    if($stmt->execute()) {
-        http_response_code(201);
-        echo json_encode(array("mensaje" => "Usuario creado con éxito"));
+
+        if($stmt->execute()) {
+            http_response_code(201);
+            echo json_encode(array("mensaje" => "Usuario creado con éxito"));
+        } else {
+            http_response_code(500);
+            echo json_encode(array("mensaje" => "No se pudo crear el usuario"));
+        }
     } else {
-        http_response_code(500);
-        echo json_encode(array("mensaje" => "No se pudo crear el usuario"));
+        http_response_code(400);
+        echo json_encode(array("mensaje" => "Datos incompletos. Todos los campos son obligatorios y no deben estar vacíos."));
     }
 }
 
@@ -78,25 +82,30 @@ function actualizarUsuario() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "UPDATE Avenger_user SET name = :name, email = :email, password = :password, releaseDate = :releaseDate WHERE idUser = :idUser";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":name", $data->name);
-    $stmt->bindParam(":email", $data->email);
-    $stmt->bindParam(":password", $data->password);
-    $stmt->bindParam(":releaseDate", $data->releaseDate);
-    $stmt->bindParam(":idUser", $data->idUser);
+    if (!empty(trim($data->idUser)) && !empty(trim($data->name)) && !empty(trim($data->email)) && !empty(trim($data->password)) && !empty(trim($data->releaseDate))) {
+        $query = "UPDATE Avenger_user SET name = :name, email = :email, password = :password, releaseDate = :releaseDate WHERE idUser = :idUser";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(":name", $data->name);
+        $stmt->bindParam(":email", $data->email);
+        $stmt->bindParam(":password", $data->password);
+        $stmt->bindParam(":releaseDate", $data->releaseDate);
+        $stmt->bindParam(":idUser", $data->idUser);
 
-    if ($stmt->execute()) {
-        if ($stmt->rowCount() > 0) {
-            http_response_code(200);
-            echo json_encode(array("mensaje" => "Usuario actualizado con éxito"));
+        if ($stmt->execute()) {
+            if ($stmt->rowCount() > 0) {
+                http_response_code(200);
+                echo json_encode(array("mensaje" => "Usuario actualizado con éxito"));
+            } else {
+                http_response_code(404);
+                echo json_encode(array("mensaje" => "No se pudo actualizar el usuario: ID no encontrado"));
+            }
         } else {
             http_response_code(500);
-            echo json_encode(array("mensaje" => "No se pudo actualizar el usuario: ID no encontrado"));
+            echo json_encode(array("mensaje" => "Error al ejecutar la consulta de actualización"));
         }
     } else {
-        http_response_code(500);
-        echo json_encode(array("mensaje" => "Error al ejecutar la consulta de actualización"));
+        http_response_code(400);
+        echo json_encode(array("mensaje" => "Datos incompletos. Todos los campos son obligatorios y no deben estar vacíos."));
     }
 }
 
@@ -104,21 +113,26 @@ function borrarUsuario() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    $query = "DELETE FROM Avenger_user WHERE idUser = :idUser";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":idUser", $data->idUser);
+    if (!empty($data->idUser)) {
+        $query = "DELETE FROM Avenger_user WHERE idUser = :idUser";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(":idUser", $data->idUser);
 
-    if ($stmt->execute()) {
-        if ($stmt->rowCount() > 0) {
-            http_response_code(200);
-            echo json_encode(array("mensaje" => "Usuario borrado con éxito"));
+        if ($stmt->execute()) {
+            if ($stmt->rowCount() > 0) {
+                http_response_code(200);
+                echo json_encode(array("mensaje" => "Usuario borrado con éxito"));
+            } else {
+                http_response_code(404);
+                echo json_encode(array("mensaje" => "No se pudo borrar el usuario: ID no encontrado"));
+            }
         } else {
             http_response_code(500);
-            echo json_encode(array("mensaje" => "No se pudo borrar el usuario: ID no encontrado"));
+            echo json_encode(array("mensaje" => "Error al ejecutar la consulta de eliminación"));
         }
     } else {
-        http_response_code(500);
-        echo json_encode(array("mensaje" => "Error al ejecutar la consulta de eliminación"));
+        http_response_code(400);
+        echo json_encode(array("mensaje" => "Datos incompletos. El campo idUser es obligatorio."));
     }
 }
 ?>
