@@ -57,12 +57,11 @@ function crearAlbum() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    if (!empty($data->idArtist) && !empty(trim($data->title)) && !empty(trim($data->releaseDate)) && !empty(trim($data->gender))) {
-        $query = "INSERT INTO Avenger_album (idArtist, title, releaseDate, gender) VALUES (:idArtist, :title, :releaseDate, :gender)";
+    if (!empty($data->idArtist) && !empty(trim($data->title)) && !empty(trim($data->gender))) {
+        $query = "INSERT INTO Avenger_album (idArtist, title, releaseDate, gender) VALUES (:idArtist, :title, NOW(), :gender)";
         $stmt = $db->prepare($query);
         $stmt->bindParam(":idArtist", $data->idArtist);
         $stmt->bindParam(":title", $data->title);
-        $stmt->bindParam(":releaseDate", $data->releaseDate);
         $stmt->bindParam(":gender", $data->gender);
 
         if($stmt->execute()) {
@@ -135,4 +134,6 @@ function borrarAlbum() {
         echo json_encode(array("mensaje" => "Datos incompletos. El campo idAlbums es obligatorio."));
     }
 }
+
 ?>
+

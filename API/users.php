@@ -56,13 +56,14 @@ function crearUsuario() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    if (!empty(trim($data->name)) && !empty(trim($data->email)) && !empty(trim($data->password)) && !empty(trim($data->releaseDate))) {
-        $query = "INSERT INTO Avenger_user (name, email, password, releaseDate) VALUES (:name, :email, :password, :releaseDate)";
+
+    if (!empty(trim($data->name)) && !empty(trim($data->email)) && !empty(trim($data->password))) {
+       
+        $query = "INSERT INTO Avenger_user (name, email, password, releaseDate) VALUES (:name, :email, :password, NOW())";
         $stmt = $db->prepare($query);
         $stmt->bindParam(":name", $data->name);
         $stmt->bindParam(":email", $data->email);
         $stmt->bindParam(":password", $data->password);
-        $stmt->bindParam(":releaseDate", $data->releaseDate);
 
         if($stmt->execute()) {
             http_response_code(201);

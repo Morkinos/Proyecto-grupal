@@ -58,6 +58,10 @@ function crearCancion() {
     $data = json_decode(file_get_contents("php://input"));
 
     if (!empty($data->idAlbum) && !empty(trim($data->title)) && !empty(trim($data->duration)) && !empty(trim($data->demo_path)) && !empty(trim($data->full_path)) && !empty($data->price)) {
+       
+        $price = $data->price;
+        $priceConImpuesto = $price + ($price * 0.13);
+
         $query = "INSERT INTO Avenger_song (idAlbum, title, duration, demo_path, full_path, price) VALUES (:idAlbum, :title, :duration, :demo_path, :full_path, :price)";
         $stmt = $db->prepare($query);
         $stmt->bindParam(":idAlbum", $data->idAlbum);
@@ -65,8 +69,7 @@ function crearCancion() {
         $stmt->bindParam(":duration", $data->duration);
         $stmt->bindParam(":demo_path", $data->demo_path);
         $stmt->bindParam(":full_path", $data->full_path);
-        $stmt->bindParam(":price", $data->price);
-
+        $stmt->bindParam(":price", $priceConImpuesto);
         if ($stmt->execute()) {
             http_response_code(201);
             echo json_encode(array("mensaje" => "Canción creada con éxito"));

@@ -57,29 +57,27 @@ function crearCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    if (is_null($data) || empty(trim($data->idUser)) || empty(trim($data->idSong)) || empty(trim($data->datePurchase)) || !isset($data->price)) {
+
+    if (!empty(trim($data->idUser)) && !empty(trim($data->idSong)) && !empty($data->price)) {
+        $price = $data->price;
+        $priceConImpuesto = $price + ($price * 0.13);
+
+        $query = "INSERT INTO Avenger_purchase (idUser, idSong, datePurchase, price) VALUES (:idUser, :idSong, NOW(), :price)";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(":idUser", $data->idUser);
+        $stmt->bindParam(":idSong", $data->idSong);
+        $stmt->bindParam(":price", $priceConImpuesto);
+
+        if ($stmt->execute()) {
+            http_response_code(201);
+            echo json_encode(array("mensaje" => "Compra creada con éxito"));
+        } else {
+            http_response_code(500);
+            echo json_encode(array("mensaje" => "No se pudo crear la compra"));
+        }
+    } else {
         http_response_code(400);
         echo json_encode(array("mensaje" => "Datos incompletos. Todos los campos son obligatorios y no deben estar vacíos."));
-        return;
-    }
-
-    // Calcular el precio con el impuesto
-    $price = $data->price;
-    $priceConImpuesto = $price + ($price * 0.13);
-
-    $query = "INSERT INTO Avenger_purchase (idUser, idSong, datePurchase, price) VALUES (:idUser, :idSong, :datePurchase, :price)";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":idUser", $data->idUser);
-    $stmt->bindParam(":idSong", $data->idSong);
-    $stmt->bindParam(":datePurchase", $data->datePurchase);
-    $stmt->bindParam(":price", $priceConImpuesto);
-
-    if ($stmt->execute()) {
-        http_response_code(201);
-        echo json_encode(array("mensaje" => "Compra creada con éxito"));
-    } else {
-        http_response_code(500);
-        echo json_encode(array("mensaje" => "No se pudo crear la compra"));
     }
 }
 
@@ -87,31 +85,30 @@ function actualizarCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    if (is_null($data) || empty(trim($data->idPurchase)) || empty(trim($data->idUser)) || empty(trim($data->idSong)) || empty(trim($data->datePurchase)) || !isset($data->price)) {
-        http_response_code(400);
-        echo json_encode(array("mensaje" => "Datos incompletos. Todos los campos son obligatorios y no deben estar vacíos."));
-        return;
-    }
+    if (!empty(trim($data->idPurchase)) && !empty(trim($data->idUser)) && !empty(trim($data->idSong)) && !empty(trim($data->datePurchase)) && isset($data->price)) {
+        $query = "UPDATE Avenger_purchase SET idUser = :idUser, idSong = :idSong, datePurchase = :datePurchase, price = :price WHERE idPurchase = :idPurchase";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(":idUser", $data->idUser);
+        $stmt->bindParam(":idSong", $data->idSong);
+        $stmt->bindParam(":datePurchase", $data->datePurchase);
+        $stmt->bindParam(":price", $data->price);
+        $stmt->bindParam(":idPurchase", $data->idPurchase);
 
-    $query = "UPDATE Avenger_purchase SET idUser = :idUser, idSong = :idSong, datePurchase = :datePurchase, price = :price WHERE idPurchase = :idPurchase";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":idUser", $data->idUser);
-    $stmt->bindParam(":idSong", $data->idSong);
-    $stmt->bindParam(":datePurchase", $data->datePurchase);
-    $stmt->bindParam(":price", $data->price);
-    $stmt->bindParam(":idPurchase", $data->idPurchase);
-
-    if ($stmt->execute()) {
-        if ($stmt->rowCount() > 0) {
-            http_response_code(200);
-            echo json_encode(array("mensaje" => "Compra actualizada con éxito"));
+        if ($stmt->execute()) {
+            if ($stmt->rowCount() > 0) {
+                http_response_code(200);
+                echo json_encode(array("mensaje" => "Compra actualizada con éxito"));
+            } else {
+                http_response_code(404);
+                echo json_encode(array("mensaje" => "No se pudo actualizar la compra: ID no encontrado"));
+            }
         } else {
-            http_response_code(404);
-            echo json_encode(array("mensaje" => "No se pudo actualizar la compra: ID no encontrado"));
+            http_response_code(500);
+            echo json_encode(array("mensaje" => "Error al ejecutar la consulta de actualización"));
         }
     } else {
-        http_response_code(500);
-        echo json_encode(array("mensaje" => "Error al ejecutar la consulta de actualización"));
+        http_response_code(400);
+        echo json_encode(array("mensaje" => "Datos incompletos. Todos los campos son obligatorios y no deben estar vacíos."));
     }
 }
 
@@ -119,27 +116,27 @@ function borrarCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-    if (is_null($data) || empty(trim($data->idPurchase))) {
-        http_response_code(400);
-        echo json_encode(array("mensaje" => "Datos incompletos. El campo idPurchase es obligatorio."));
-        return;
-    }
 
-    $query = "DELETE FROM Avenger_purchase WHERE idPurchase = :idPurchase";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":idPurchase", $data->idPurchase);
+    if (!empty(trim($data->idPurchase))) {
+        $query = "DELETE FROM Avenger_purchase WHERE idPurchase = :idPurchase";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(":idPurchase", $data->idPurchase);
 
-    if ($stmt->execute()) {
-        if ($stmt->rowCount() > 0) {
-            http_response_code(200);
-            echo json_encode(array("mensaje" => "Compra borrada con éxito"));
+        if ($stmt->execute()) {
+            if ($stmt->rowCount() > 0) {
+                http_response_code(200);
+                echo json_encode(array("mensaje" => "Compra borrada con éxito"));
+            } else {
+                http_response_code(404);
+                echo json_encode(array("mensaje" => "No se pudo borrar la compra: ID no encontrado"));
+            }
         } else {
-            http_response_code(404);
-            echo json_encode(array("mensaje" => "No se pudo borrar la compra: ID no encontrado"));
+            http_response_code(500);
+            echo json_encode(array("mensaje" => "Error al ejecutar la consulta de eliminación"));
         }
     } else {
-        http_response_code(500);
-        echo json_encode(array("mensaje" => "Error al ejecutar la consulta de eliminación"));
+        http_response_code(400);
+        echo json_encode(array("mensaje" => "Datos incompletos. El campo idPurchase es obligatorio."));
     }
 }
 ?>
