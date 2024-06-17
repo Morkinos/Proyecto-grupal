@@ -37,7 +37,11 @@ switch ($request_method) {
 
 function obtenerCompras() {
     global $db;
+<<<<<<< Updated upstream
     $query = "SELECT idPurchase, idUser, idSong, price, datePurchase FROM Avenger_purchase";
+=======
+    $query = "SELECT idPurchase, idUser, idSong, datePurchase, price FROM Avenger_purchase";
+>>>>>>> Stashed changes
     $stmt = $db->prepare($query);
     $stmt->execute();
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -58,7 +62,11 @@ function crearCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
+<<<<<<< Updated upstream
     $query = "INSERT INTO Avenger_purchase (idUser, idSong, price, datePurchase) VALUES (:idUser, :idSong, :price, :datePurchase)";
+=======
+    $query = "INSERT INTO Avenger_purchase (idUser, idSong, datePurchase, price) VALUES (:idUser, :idSong, :datePurchase, :price)";
+>>>>>>> Stashed changes
     $stmt = $db->prepare($query);
     $stmt->bindParam(":idUser", $data->idUser);
     $stmt->bindParam(":idSong", $data->idSong);
@@ -78,7 +86,11 @@ function actualizarCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
+<<<<<<< Updated upstream
     $query = "UPDATE Avenger_purchase SET idUser = :idUser, idSong = :idSong, price = :price, datePurchase = :datePurchase WHERE idPurchase = :idPurchase";
+=======
+    $query = "UPDATE Avenger_purchase SET idUser = :idUser, idSong = :idSong, datePurchase = :datePurchase, price = :price WHERE idPurchase = :idPurchase";
+>>>>>>> Stashed changes
     $stmt = $db->prepare($query);
     $stmt->bindParam(":idUser", $data->idUser);
     $stmt->bindParam(":idSong", $data->idSong);
@@ -99,7 +111,11 @@ function borrarCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
+<<<<<<< Updated upstream
     $query = "DELETE FROM purchases WHERE idPurchase = :idPurchase";
+=======
+    $query = "DELETE FROM Avenger_purchase WHERE idPurchase = :idPurchase";
+>>>>>>> Stashed changes
     $stmt = $db->prepare($query);
     $stmt->bindParam(":idPurchase", $data->idPurchase);
 
