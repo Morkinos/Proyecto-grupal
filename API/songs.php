@@ -70,7 +70,6 @@ function crearCancion() {
         $stmt->bindParam(":demo_path", $data->demo_path);
         $stmt->bindParam(":full_path", $data->full_path);
         $stmt->bindParam(":price", $priceConImpuesto);
-
         if ($stmt->execute()) {
             http_response_code(201);
             echo json_encode(array("mensaje" => "Canción creada con éxito"));

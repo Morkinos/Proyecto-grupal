@@ -57,6 +57,7 @@ function crearCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
+
     if (!empty(trim($data->idUser)) && !empty(trim($data->idSong)) && !empty($data->price)) {
         $price = $data->price;
         $priceConImpuesto = $price + ($price * 0.13);
@@ -114,6 +115,7 @@ function actualizarCompra() {
 function borrarCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
+
 
     if (!empty(trim($data->idPurchase))) {
         $query = "DELETE FROM Avenger_purchase WHERE idPurchase = :idPurchase";

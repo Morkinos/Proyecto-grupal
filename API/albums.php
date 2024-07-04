@@ -134,4 +134,6 @@ function borrarAlbum() {
         echo json_encode(array("mensaje" => "Datos incompletos. El campo idAlbums es obligatorio."));
     }
 }
+
 ?>
+

@@ -56,15 +56,12 @@ function obtenerArtist($idArtist) {
 function crearArtist() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
-
     if (!empty(trim($data->name)) && !empty(trim($data->biography))) {
        
         $query = "INSERT INTO Avenger_artist (name, biography, creationDate) VALUES (:name, :biography, NOW())";
         $stmt = $db->prepare($query);
         $stmt->bindParam(":name", $data->name);
         $stmt->bindParam(":biography", $data->biography);
- 
-
         if ($stmt->execute()) {
             http_response_code(201);
             echo json_encode(array("mensaje" => "Artista creado con éxito"));
