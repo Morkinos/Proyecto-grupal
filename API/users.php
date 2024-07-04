@@ -19,15 +19,7 @@ switch ($request_method) {
         actualizarUsuario(); 
         break;
     case 'GET':
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-        isset($_GET["id"]) ? obtenerUsuario(intval($_GET["id"])) : obtenerUsuarios();
-=======
         isset($_GET["idUser"]) ? obtenerUsuario(intval($_GET["idUser"])) : obtenerUsuarios();
->>>>>>> Stashed changes
-=======
-        isset($_GET["idUser"]) ? obtenerUsuario(intval($_GET["idUser"])) : obtenerUsuarios();
->>>>>>> DylanRama
         break;
     case 'DELETE':
         borrarUsuario();
@@ -43,15 +35,7 @@ switch ($request_method) {
 
 function obtenerUsuarios() {
     global $db;
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-    $query = "SELECT id, nombre, email, password, fecha_registro FROM users";
-=======
     $query = "SELECT idUser, name, email, password, releaseDate FROM Avenger_user";
->>>>>>> Stashed changes
-=======
-    $query = "SELECT idUser, name, email, password, releaseDate FROM Avenger_user";
->>>>>>> DylanRama
     $stmt = $db->prepare($query);
     $stmt->execute();
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -60,15 +44,7 @@ function obtenerUsuarios() {
 
 function obtenerUsuario($idUser) {
     global $db;
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-    $query = "SELECT id, nombre, email, password, fecha_registro FROM users WHERE id = ?";
-=======
-    $query = "SELECT idUser, nombre, email, password, releaseDate FROM Avenger_users WHERE idUsers = ?";
->>>>>>> Stashed changes
-=======
     $query = "SELECT idUser, name, email, password, releaseDate FROM Avenger_user WHERE idUser = ?";
->>>>>>> DylanRama
     $stmt = $db->prepare($query);
     $stmt->bindParam(1, $idUser);
     $stmt->execute();
@@ -80,18 +56,6 @@ function crearUsuario() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-    $query = "INSERT INTO users (nombre, email, password, fecha_registro) VALUES (:nombre, :email, :password, :fecha_registro)";
-=======
-    $query = "INSERT INTO Avenger_user (name, email, password, releaseDate) VALUES (:name, :email, :password, :releaseDate)";
->>>>>>> Stashed changes
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":name", $data->name);
-    $stmt->bindParam(":email", $data->email);
-    $stmt->bindParam(":password", $data->password);
-    $stmt->bindParam(":fecha_registro", $data->fecha_registro);
-=======
     if (!empty(trim($data->name)) && !empty(trim($data->email)) && !empty(trim($data->password))) {
        
         $query = "INSERT INTO Avenger_user (name, email, password, releaseDate) VALUES (:name, :email, :password, NOW())";
@@ -99,7 +63,6 @@ function crearUsuario() {
         $stmt->bindParam(":name", $data->name);
         $stmt->bindParam(":email", $data->email);
         $stmt->bindParam(":password", $data->password);
->>>>>>> DylanRama
 
 
         if($stmt->execute()) {
@@ -119,24 +82,6 @@ function actualizarUsuario() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-    $query = "UPDATE users SET nombre = :nombre, email = :email, password = :password, fecha_registro = :fecha_registro WHERE id = :id";
-=======
-    $query = "UPDATE Avenger_user SET nombre = :nombre, email = :email, password = :password, releaseDate = :releaseDate WHERE idUsers = :idUser";
->>>>>>> Stashed changes
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":name", $data->name);
-    $stmt->bindParam(":email", $data->email);
-    $stmt->bindParam(":password", $data->password);
-<<<<<<< Updated upstream
-    $stmt->bindParam(":fecha_registro", $data->fecha_registro);
-    $stmt->bindParam(":id", $data->id);
-=======
-    $stmt->bindParam(":releaseDate", $data->releaseDate);
-    $stmt->bindParam(":idUser", $data->idUser);
->>>>>>> Stashed changes
-=======
     if (!empty(trim($data->idUser)) && !empty(trim($data->name)) && !empty(trim($data->email)) && !empty(trim($data->password)) && !empty(trim($data->releaseDate))) {
         $query = "UPDATE Avenger_user SET name = :name, email = :email, password = :password, releaseDate = :releaseDate WHERE idUser = :idUser";
         $stmt = $db->prepare($query);
@@ -145,7 +90,6 @@ function actualizarUsuario() {
         $stmt->bindParam(":password", $data->password);
         $stmt->bindParam(":releaseDate", $data->releaseDate);
         $stmt->bindParam(":idUser", $data->idUser);
->>>>>>> DylanRama
 
         if ($stmt->execute()) {
             if ($stmt->rowCount() > 0) {
@@ -169,22 +113,10 @@ function borrarUsuario() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-    $query = "DELETE FROM users WHERE id = :id";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":id", $data->id);
-=======
-    $query = "DELETE FROM Avenger_user WHERE idUser = :idUser";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":idUser", $data->idUser);
->>>>>>> Stashed changes
-=======
     if (!empty($data->idUser)) {
         $query = "DELETE FROM Avenger_user WHERE idUser = :idUser";
         $stmt = $db->prepare($query);
         $stmt->bindParam(":idUser", $data->idUser);
->>>>>>> DylanRama
 
         if ($stmt->execute()) {
             if ($stmt->rowCount() > 0) {

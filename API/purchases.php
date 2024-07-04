@@ -36,15 +36,7 @@ switch ($request_method) {
 
 function obtenerCompras() {
     global $db;
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-    $query = "SELECT idPurchase, idUser, idSong, price, datePurchase FROM Avenger_purchase";
-=======
     $query = "SELECT idPurchase, idUser, idSong, datePurchase, price FROM Avenger_purchase";
->>>>>>> Stashed changes
-=======
-    $query = "SELECT idPurchase, idUser, idSong, datePurchase, price FROM Avenger_purchase";
->>>>>>> DylanRama
     $stmt = $db->prepare($query);
     $stmt->execute();
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -53,11 +45,7 @@ function obtenerCompras() {
 
 function obtenerCompra($idPurchase) {
     global $db;
-<<<<<<< HEAD
-    $query = "SELECT idPurchase, idUser, idSong, price, datePurchase FROM Avenger_purchase WHERE idPurchase = ?";
-=======
     $query = "SELECT idPurchase, idUser, idSong, datePurchase, price FROM Avenger_purchase WHERE idPurchase = ?";
->>>>>>> DylanRama
     $stmt = $db->prepare($query);
     $stmt->bindParam(1, $idPurchase);
     $stmt->execute();
@@ -69,22 +57,9 @@ function crearCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-    $query = "INSERT INTO Avenger_purchase (idUser, idSong, price, datePurchase) VALUES (:idUser, :idSong, :price, :datePurchase)";
-=======
-    $query = "INSERT INTO Avenger_purchase (idUser, idSong, datePurchase, price) VALUES (:idUser, :idSong, :datePurchase, :price)";
->>>>>>> Stashed changes
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":idUser", $data->idUser);
-    $stmt->bindParam(":idSong", $data->idSong);
-    $stmt->bindParam(":price", $data->price);
-    $stmt->bindParam(":datePurchase", $data->datePurchase);
-=======
     if (!empty(trim($data->idUser)) && !empty(trim($data->idSong)) && !empty($data->price)) {
         $price = $data->price;
         $priceConImpuesto = $price + ($price * 0.13);
->>>>>>> DylanRama
 
         $query = "INSERT INTO Avenger_purchase (idUser, idSong, datePurchase, price) VALUES (:idUser, :idSong, NOW(), :price)";
         $stmt = $db->prepare($query);
@@ -109,19 +84,6 @@ function actualizarCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-    $query = "UPDATE Avenger_purchase SET idUser = :idUser, idSong = :idSong, price = :price, datePurchase = :datePurchase WHERE idPurchase = :idPurchase";
-=======
-    $query = "UPDATE Avenger_purchase SET idUser = :idUser, idSong = :idSong, datePurchase = :datePurchase, price = :price WHERE idPurchase = :idPurchase";
->>>>>>> Stashed changes
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":idUser", $data->idUser);
-    $stmt->bindParam(":idSong", $data->idSong);
-    $stmt->bindParam(":price", $data->price);
-    $stmt->bindParam(":datePurchase", $data->datePurchase);
-    $stmt->bindParam(":idPurchase", $data->idPurchase);
-=======
     if (!empty(trim($data->idPurchase)) && !empty(trim($data->idUser)) && !empty(trim($data->idSong)) && !empty(trim($data->datePurchase)) && isset($data->price)) {
         $query = "UPDATE Avenger_purchase SET idUser = :idUser, idSong = :idSong, datePurchase = :datePurchase, price = :price WHERE idPurchase = :idPurchase";
         $stmt = $db->prepare($query);
@@ -130,7 +92,6 @@ function actualizarCompra() {
         $stmt->bindParam(":datePurchase", $data->datePurchase);
         $stmt->bindParam(":price", $data->price);
         $stmt->bindParam(":idPurchase", $data->idPurchase);
->>>>>>> DylanRama
 
         if ($stmt->execute()) {
             if ($stmt->rowCount() > 0) {
@@ -154,20 +115,10 @@ function borrarCompra() {
     global $db;
     $data = json_decode(file_get_contents("php://input"));
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-    $query = "DELETE FROM purchases WHERE idPurchase = :idPurchase";
-=======
-    $query = "DELETE FROM Avenger_purchase WHERE idPurchase = :idPurchase";
->>>>>>> Stashed changes
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":idPurchase", $data->idPurchase);
-=======
     if (!empty(trim($data->idPurchase))) {
         $query = "DELETE FROM Avenger_purchase WHERE idPurchase = :idPurchase";
         $stmt = $db->prepare($query);
         $stmt->bindParam(":idPurchase", $data->idPurchase);
->>>>>>> DylanRama
 
         if ($stmt->execute()) {
             if ($stmt->rowCount() > 0) {
